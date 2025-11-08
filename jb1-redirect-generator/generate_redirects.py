@@ -14,6 +14,8 @@ that map old URLs (e.g., overview.html) to new MyST URLs (e.g., /overview/).
 This is useful when migrating from Jupyter Book v1 to MyST/Jupyter Book v2,
 as the URL structure changes from .html files to directory-based URLs.
 
+Inspired by Silas Santini's (@pancakereport) work in the data-8/textbook repository.
+
 Index File Detection
 --------------------
 The first file in your table of contents is automatically detected as the
@@ -38,21 +40,24 @@ Examples:
 - "Multiple___Special.md" → "multiple-special"
 
 Usage:
-    # With uv (recommended):
-    uv run scripts/generate_redirects.py --base-url https://example.com/ --output-dir _build/redirects
-
-    # Direct execution:
-    python scripts/generate_redirects.py --base-url https://example.com/ --output-dir _build/redirects
+    # Basic usage (auto-discovers myst.yml):
+    uv run generate_redirects.py --base-url https://example.com/
 
     # With custom myst.yml location:
-    python scripts/generate_redirects.py --base-url https://example.com/ --myst-config path/to/myst.yml
+    uv run generate_redirects.py --base-url https://example.com/ --myst-config path/to/myst.yml
+
+    # With custom output directory:
+    uv run generate_redirects.py --base-url https://example.com/ --output-dir public/redirects
+
+    # Run directly from GitHub:
+    uv run https://raw.githubusercontent.com/jupyter/governance/main/jb1-redirect-generator/generate_redirects.py --base-url https://example.com/
 
 Examples:
-    # Generate redirects for Jupyter governance docs:
-    uv run scripts/generate_redirects.py --base-url https://jupyter.org/governance/
+    # Generate redirects for your site:
+    uv run generate_redirects.py --base-url https://mysite.org/docs/
 
     # Specify custom output directory:
-    uv run scripts/generate_redirects.py --base-url https://example.com/ --output-dir public/redirects
+    uv run generate_redirects.py --base-url https://example.com/ --output-dir _build/dirhtml
 """
 import re
 import sys
