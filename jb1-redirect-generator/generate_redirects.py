@@ -185,6 +185,30 @@ def load_myst_toc(myst_config_path: Path) -> List[str]:
     return flatten_toc(config['project']['toc'])
 
 
+def discover_myst_config() -> Path:
+    """Auto-discover myst.yml in common locations.
+
+    Returns:
+        Path to myst.yml
+
+    Raises:
+        FileNotFoundError: If myst.yml not found in any common location
+    """
+    common_locations = [
+        Path('./myst.yml'),
+        Path('./docs/myst.yml'),
+    ]
+
+    for location in common_locations:
+        if location.exists():
+            return location
+
+    raise FileNotFoundError(
+        "Could not find myst.yml in common locations (./myst.yml, ./docs/myst.yml). "
+        "Use --myst-config to specify the path explicitly."
+    )
+
+
 def generate_redirects(
     base_url: str,
     output_root: Path,
@@ -265,8 +289,8 @@ def generate_redirects(
 @click.option(
     '--myst-config',
     type=click.Path(exists=True, path_type=Path),
-    default='docs/myst.yml',
-    help='Path to the myst.yml configuration file (default: docs/myst.yml)',
+    default=None,
+    help='Path to the myst.yml configuration file (default: auto-discover)',
 )
 @click.option(
     '--quiet',
@@ -283,6 +307,16 @@ def main(base_url: str, output_dir: Path, myst_config: Path, quiet: bool):
     The script reads your myst.yml table of contents and creates redirect
     files that map old .html URLs to the new directory-based structure.
     """
+    # Auto-discover config if not specified
+    if myst_config is None:
+        try:
+            myst_config = discover_myst_config()
+            if not quiet:
+                click.echo(f"ℹ️  Auto-discovered config: {myst_config}")
+        except FileNotFoundError as e:
+            click.echo(f"❌ Error: {e}", err=True)
+            sys.exit(1)
+
     try:
         count = generate_redirects(
             base_url=base_url,
