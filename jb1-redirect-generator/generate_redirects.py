@@ -259,8 +259,8 @@ def generate_redirects(
 @click.option(
     '--output-dir',
     type=click.Path(path_type=Path),
-    default='_build/redirects',
-    help='Directory where redirect files will be created (default: _build/redirects)',
+    default='_build/html',
+    help='Directory where redirect files will be created (default: _build/html)',
 )
 @click.option(
     '--myst-config',
